@@ -1,3 +1,19 @@
 CONTEXT.md
 EVAL.md
 CLAUDE.local.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+build/
+dist/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/

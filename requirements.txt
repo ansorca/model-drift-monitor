@@ -1,0 +1,6 @@
+# Runtime dependencies, pinned. Kept in sync with pyproject.toml's [project.dependencies] —
+# this file exists for contexts that install with pip -r rather than pip install .
+# (e.g. building a Lambda deployment package).
+boto3==1.43.78
+pandas==2.3.3
+evidently==0.7.21
