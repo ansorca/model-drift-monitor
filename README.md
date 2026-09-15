@@ -61,8 +61,15 @@ provisioned via Terraform. Nothing is created manually in the console.
 
 ## Status
 
-Early scaffolding stage — no code yet. This README describes the intended shape of the project;
-see the repository's `pyproject.toml` and `src/` layout as they land for the current state.
+Core drift detection is implemented: `driftwatch.core.detect_drift` runs a Kolmogorov-Smirnov
+test per feature via Evidently AI and returns a structured per-feature result, with unit tests
+covering the happy path, mismatched/non-numeric columns, empty input, and threshold behavior.
+The `driftwatch check` CLI command reads baseline/current CSVs and reports drift with a non-zero
+exit code.
+
+Not yet built: the Lambda handler (stub only), all Terraform-provisioned AWS infrastructure
+(S3, CloudWatch, SNS, IAM), and support for reading directly from S3 URIs. CI runs ruff, mypy,
+and pytest on every push and PR to `main`.
 
 ## License
 
