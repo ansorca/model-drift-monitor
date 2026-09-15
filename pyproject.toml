@@ -21,6 +21,7 @@ dev = [
     "pytest==8.3.4",
     "mypy==1.14.1",
     "ruff==0.9.2",
+    "pandas-stubs==3.0.5.260730",
 ]
 
 [project.scripts]
