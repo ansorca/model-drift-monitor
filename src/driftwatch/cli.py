@@ -11,6 +11,10 @@ from __future__ import annotations
 import argparse
 import sys
 
+import pandas as pd
+
+from driftwatch.core import detect_drift
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -39,13 +43,14 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _run_check(args: argparse.Namespace) -> int:
-    # TODO(author): call driftwatch.core's public API once it exists, e.g.
-    #   from driftwatch import detect_drift
-    #   report = detect_drift(args.baseline, args.current, threshold=args.threshold)
-    # and print/exit based on its result (see EVAL.md: non-zero exit on drift).
-    raise NotImplementedError(
-        "driftwatch check is not implemented yet — see src/driftwatch/core.py (Tier 1)."
-    )
+    baseline = pd.read_csv(args.baseline)
+    current = pd.read_csv(args.current)
+    if detect_drift(baseline, current, ks_p_value_threshold=args.threshold):
+        print("Drift detected!")
+        return 1
+    else:
+        print("No drift detected.")
+        return 0
 
 
 def main(argv: list[str] | None = None) -> int:

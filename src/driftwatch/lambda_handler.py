@@ -19,6 +19,4 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     environment variables, then publish the drift score via
     `cloudwatch:PutMetricData` so the Terraform-defined alarm can act on it.
     """
-    raise NotImplementedError(
-        "lambda_handler depends on driftwatch.core's public API (Tier 1)."
-    )
+    raise NotImplementedError("lambda_handler depends on driftwatch.core's public API (Tier 1).")
