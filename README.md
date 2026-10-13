@@ -1,8 +1,17 @@
 # driftwatch — Model Drift Monitor on AWS
 
-A monitoring pipeline that detects statistical drift in ML model outputs relative to a baseline
-distribution, alerts when drift crosses a threshold, and ships as an installable Python tool
-rather than a one-off script.
+🚧 **Work in progress.** Core drift detection works; the AWS/Terraform side doesn't exist yet.
+See [Status](#status) for exactly what's built versus pending.
+
+## Purpose
+
+A model's predictions can quietly diverge from the distribution it was trained and validated
+against — through input data changes, upstream schema drift, or shifting real-world conditions.
+Without monitoring, that divergence is invisible until it shows up as a downstream failure.
+
+driftwatch is a monitoring pipeline that detects that kind of statistical drift in ML model
+outputs relative to a baseline distribution, alerts when drift crosses a threshold, and ships as
+an installable Python tool rather than a one-off script.
 
 ## What it does
 
@@ -17,11 +26,8 @@ rather than a one-off script.
 
 ## Why drift detection matters
 
-A model's predictions can quietly diverge from the distribution it was trained and validated
-against — through input data changes, upstream schema drift, or shifting real-world conditions.
-Without monitoring, that divergence is invisible until it shows up as a downstream failure.
 Statistical drift tests turn "the model might be behaving differently now" into a measurable,
-alertable signal.
+alertable signal, instead of something that's only obvious after it's already caused a problem.
 
 - **KS test** — compares two distributions and asks whether they're statistically distinguishable.
 - **PSI (Population Stability Index)** — buckets a feature's values and measures how much the
@@ -61,15 +67,38 @@ provisioned via Terraform. Nothing is created manually in the console.
 
 ## Status
 
-Core drift detection is implemented: `driftwatch.core.detect_drift` runs a Kolmogorov-Smirnov
-test per feature via Evidently AI and returns a structured per-feature result, with unit tests
-covering the happy path, mismatched/non-numeric columns, empty input, and threshold behavior.
-The `driftwatch check` CLI command reads baseline/current CSVs and reports drift with a non-zero
-exit code.
+This project is under active development. Nothing below is final until every box is checked.
 
-Not yet built: the Lambda handler (stub only), all Terraform-provisioned AWS infrastructure
-(S3, CloudWatch, SNS, IAM), and support for reading directly from S3 URIs. CI runs ruff, mypy,
-and pytest on every push and PR to `main`.
+**Drift detection library**
+- [x] `detect_drift` / `ks_test` run a per-feature Kolmogorov-Smirnov test via Evidently AI
+- [x] Unit tests covering happy path, mismatched/non-numeric columns, empty input, threshold
+  behavior
+- [ ] PSI (Population Stability Index) as a second statistical test
+- [ ] Re-export `detect_drift` from the top-level `driftwatch` package (currently only reachable
+  via `driftwatch.core`)
+
+**CLI**
+- [x] `driftwatch check --baseline ... --current ...` reads CSVs, reports drift, exits non-zero
+  on detection
+- [ ] Reading directly from `s3://` URIs (local file paths only so far)
+- [ ] End-to-end CLI test against sample data
+
+**AWS infrastructure**
+- [ ] S3 bucket for prediction log ingestion
+- [ ] Lambda function running the drift check on a schedule (handler is currently a stub)
+- [ ] CloudWatch alarm on threshold breach
+- [ ] SNS topic routing alerts to email/webhook
+- [ ] Least-privilege IAM for the Lambda role
+
+**Terraform**
+- [ ] Not started — none of the AWS infrastructure above is provisioned yet
+
+**Repo hygiene**
+- [x] CI (ruff, mypy, pytest) runs on every push and PR to `main`; merge to `main` is blocked
+  until it's green
+- [x] Sample baseline/drifted prediction logs included under `sample_data/`
+- [ ] "Design decisions" section explaining the non-obvious choices (e.g. what the drift
+  threshold represents)
 
 ## License
 
